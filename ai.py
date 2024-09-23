@@ -1,4 +1,4 @@
-# NAME(S): [PLACE YOUR NAME(S) HERE]
+# NAME(S): Joe Binette, Tyler Harwood
 #
 # APPROACH: [WRITE AN OVERVIEW OF YOUR APPROACH HERE.]
 #     Please use multiple lines (< ~80-100 char) for you approach write-up.
@@ -45,4 +45,24 @@ class AI:
         """
         
         return random.choice(['N', 'S', 'E', 'W'])
-    
+
+# Class that bundles together coordinate pairs.
+class Coordinates(object):
+     def __init__(self, x: int, y: int):
+         self.x: int = x # Horizontal coordinate
+         self.y: int = y # Vertical coordinate
+
+# Abstract class that is a parent to all tiles.
+# Defines behavior for how they are displayed on the map.
+class Tile(object):
+    def __init__(self):
+        self.tile_marker: str = "T"
+        
+    def __str__(self):
+        return self.tile_marker
+
+# Fills in positions on the map that have not been seen, but are known to exist.
+# Adjacent grass tiles become frontiers.
+class Unknown_Tile(Tile):
+    def __init__(self):
+        self.tile_marker: str = "❔"
