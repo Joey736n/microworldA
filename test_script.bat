@@ -1,0 +1,1 @@
+python main.py -w .\worlds\worldA -d 0.2
