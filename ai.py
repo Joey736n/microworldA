@@ -56,7 +56,7 @@ class Coordinates(object):
 # Defines behavior for how they are displayed on the map.
 class Tile(object):
     def __init__(self):
-        self.tile_marker: str = "T"
+        self.tile_marker: str = "T" # tile_marker is the symbol that will be used when displayed on the map.
         
     def __str__(self):
         return self.tile_marker
@@ -66,3 +66,27 @@ class Tile(object):
 class Unknown_Tile(Tile):
     def __init__(self):
         self.tile_marker: str = "❔"
+
+# Represents an area that the AI cannot walk on.
+class Wall_Tile(Tile):
+    def __init__(self):
+        self.tile_marker: str = "⬛"
+        
+# A walkable map tile.
+# Contains a visited properties to prevent remapping the same position.
+class Grass_Tile(Tile):
+    def __init__(self, visited=False):
+        self.tile_marker: str = "⬜"
+        self.visited: bool = visited
+        
+# A grass tile that is next to an unknown tile. The AI is compelled to navigate to them.
+class Frontier_Tile(Grass_Tile):
+    def __init__(self):
+        self.tile_marker: str = "🟨"
+        self.visited: bool = False
+        
+# The exit, and ultimate objective of the AI.
+class Exit_Tile(Grass_Tile):
+    def __init__(self):
+        self.tile_marker: str = "🟥"
+        self.visited: bool = False
