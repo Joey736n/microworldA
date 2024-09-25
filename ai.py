@@ -119,6 +119,11 @@ class Map(object):
             self.robot_location.y -= distance
         self.map_height += abs(distance)
         
+    def print_map(self):
+        for y in self.tile_map:
+            for x in y:
+                print(x, end="")
+            print()
                 
     def scan(self, percepts):
         pass
