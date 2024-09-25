@@ -90,3 +90,35 @@ class Exit_Tile(Grass_Tile):
     def __init__(self):
         self.tile_marker: str = "🟥"
         self.visited: bool = False
+        
+class Map(object):
+    def __init__(self):
+        map_height: int = 1
+        map_width: int = 1
+        tile_map = [[]]
+        robot_location: Coordinates = Coordinates(0, 0)
+        frontier_tiles = []
+
+    def expand_x(self, distance: int):
+        for row in self.tile_map:
+            if distance > 0:
+                row += [Unknown_Tile()] * distance
+            elif distance < 0:
+                row = ([Unknown_Tile()] * abs(distance)) + row
+                self.robot_location.x -= distance
+        self.map_width += abs(distance)
+
+    def expand_y(self, distance: int):
+        new_space = []
+        for i in range(abs(distance)):
+            new_space.append([Unknown_Tile()] * self.map_width)
+        if distance > 0:
+            self.tile_map += new_space
+        elif distance < 0:
+            self.tile_map = new_space + self.tile_map
+            self.robot_location.y -= distance
+        self.map_height += abs(distance)
+        
+                
+    def scan(self, percepts):
+        pass
