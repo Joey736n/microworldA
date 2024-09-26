@@ -18,6 +18,34 @@ class AI:
         to initialize any data or data structures you need.
         """
         self.turn = 0
+    
+    def Astar(start, goal):
+        """
+        A* algorithm for pathfinding to next frontier, do if time
+        """
+
+    def BFS(start, goal):
+        """
+        basic BFS alg to find next frontier node
+        """
+        queue = []
+
+
+        return 
+    def spiral_scan():
+        """
+        scan each neighbor to see what the node is and add to the table
+        if its the goal return it. 
+        else move on. 
+
+        After a scan we pick the next node to move to with a shortest path func
+        
+        """
+        for i in range(self.x-1, self.x+2):
+            for j in range(self.y-1, self.y+2):
+        
+        
+
 
     def update(self, percepts):
         """
@@ -43,8 +71,8 @@ class AI:
 
         The same goes for goal hexes (0, 1, 2, 3, 4, 5, 6, 7, 8, 9).
         """
-        
-        return random.choice(['N', 'S', 'E', 'W'])
+        spiral_scan()
+        while 
 
 # Class that bundles together coordinate pairs.
 class Coordinates(object):
