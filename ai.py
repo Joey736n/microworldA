@@ -108,41 +108,56 @@ class Exit_Tile(Grass_Tile):
         self.visited: bool = False
         #🟥
         
+# Keeps track of where everything is.
+# Expands and changes based on the AI's discoveries.
 class Map(object):
     def __init__(self):
         self.map_height: int = 1
         self.map_width: int = 1
-        self.tile_map = [[Grass_Tile()]]
-        self.robot_location: Coordinates = Coordinates(0, 0)
-        self.frontier_tiles = []
+        self.tile_map = [[Grass_Tile()]] # This is the 2D array that stores the bulk of mapping information.
+        self.robot_location: Coordinates = Coordinates(0, 0) # Keeps track of the AI's position.
+        self.frontier_tiles = [] # Keeps track of tiles that may lead to new space being mapped.
 
+	# Expands self.tile_map along the x axis in either direction.
+    # Negative values expand West, positive values expand East.
     def expand_x(self, distance: int):
         for index, row in enumerate(self.tile_map):
+            # Case for postive values. Expands the map East by {distance} tiles.
             if distance > 0:
                 self.tile_map[index] = row + ([Unknown_Tile()] * distance)
+            # Case for negative values. Expands the map West by {distance} tiles.
             elif distance < 0:
                 self.tile_map[index] = ([Unknown_Tile()] * abs(distance)) + row
+        # Corrects the robot's position if the map was expanded on the West.
         if distance < 0:
             self.robot_location.x += abs(distance)
         self.map_width += abs(distance)
 
+	# Expands self.tile_map along the y axis in either direction.
+    # Negative values expand North, positve values expand South.
     def expand_y(self, distance: int):
         new_space = []
+        # Prepares the tiles that will be added to the map.
         for i in range(abs(distance)):
             new_space.append([Unknown_Tile()] * self.map_width)
+        # Adds tiles at the south if distance is positive.
         if distance > 0:
             self.tile_map += new_space
+        # Adds tiles at the north if distance is negative.
         elif distance < 0:
             self.tile_map = new_space + self.tile_map
+            # Corrects the robots position if map was expanded north.
             self.robot_location.y += abs(distance)
         self.map_height += abs(distance)
-        
+    
+	# Prints the map in an easy to read format.
     def print_map(self):
         for y in self.tile_map:
             for x in y:
                 print(x, end="")
             print()
             
+	# Returns a new tile based on characters found in the percepts.
     def charToTile(self, character):
         if character == "g":
             return Grass_Tile()
@@ -150,38 +165,48 @@ class Map(object):
             return Wall_Tile()
         elif character == "r":
             return Exit_Tile()
-                
+    
+	# Adds newly discovered tiles to the map. This one's a whopper.
     def scan(self, percepts):
         robot_x = self.robot_location.x
         robot_y = self.robot_location.y
         self.tile_map[robot_y][robot_x] = self.charToTile(percepts["X"][0])
+        # x_distance are the distance from where the robot is to the edge of the map.
         north_distance = robot_y
         east_distance = (self.map_width - 1) - robot_x
         south_distance = (self.map_height - 1) - robot_y
         west_distance = robot_x
+        # Checks if expanding North is necessary, and expands if needed.
         if len(percepts["N"]) > north_distance:
             self.expand_y(north_distance - len(percepts["N"]))
+        # Places tiles in a row starting from the robot's position.
         tile_placement_offset = 0
         for i in percepts["N"]:
             tile_placement_offset -= 1
             if isinstance(self.tile_map[self.robot_location.y + tile_placement_offset][self.robot_location.x], Unknown_Tile):
                 self.tile_map[self.robot_location.y + tile_placement_offset][self.robot_location.x] = self.charToTile(i)
+        # Checks if expanding East is necessary, and expands if needed.
         if len(percepts["E"]) > east_distance:
             self.expand_x(len(percepts["E"]) - east_distance)
+        # Places tiles in a row starting from the robot's position.
         tile_placement_offset = 0
         for i in percepts["E"]:
             tile_placement_offset += 1
             if isinstance(self.tile_map[self.robot_location.y][self.robot_location.x + tile_placement_offset], Unknown_Tile):
                 self.tile_map[self.robot_location.y][self.robot_location.x + tile_placement_offset] = self.charToTile(i)
+        # Checks if expanding South is necessary, and expands if needed.
         if len(percepts["S"]) > south_distance:
             self.expand_y(len(percepts["S"]) - south_distance)
+        # Places tiles in a row starting from the robot's position.
         tile_placement_offset = 0
         for i in percepts["S"]:
             tile_placement_offset += 1
             if isinstance(self.tile_map[self.robot_location.y + tile_placement_offset][self.robot_location.x], Unknown_Tile):
                 self.tile_map[self.robot_location.y + tile_placement_offset][self.robot_location.x] = self.charToTile(i)
+        # Checks if expanding West is necessary, and expands if needed.
         if len(percepts["W"]) > west_distance:
             self.expand_x(west_distance - len(percepts["W"]))
+        # Places tiles in a row starting from the robot's position.
         tile_placement_offset = 0
         for i in percepts["W"]:
             tile_placement_offset -= 1
