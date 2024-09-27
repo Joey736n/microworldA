@@ -1,1 +1,2 @@
-python main.py -w .\worlds\worldA -d 0.2
+python main.py -w .\worlds\worldA -d 2.0
+pause
