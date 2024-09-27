@@ -9,7 +9,7 @@
 #     of your approach.
 
 import random
-
+from collections import deque as queue
 
 class AI:
     def __init__(self):
@@ -18,17 +18,18 @@ class AI:
         to initialize any data or data structures you need.
         """
         self.turn = 0
-    
-    def Astar(start, goal):
-        """
-        A* algorithm for pathfinding to next frontier, do if time
-        """
+        self.map = [[]]
 
     def BFS(start, goal):
         """
         basic BFS alg to find next frontier node
+        we basically need to iterate through the
+        entire frontier. 
         """
-        queue = []
+        q = queue()
+        reached = self.map.copy()
+        #add 
+        if tile.
 
 
         return 
@@ -71,8 +72,6 @@ class AI:
 
         The same goes for goal hexes (0, 1, 2, 3, 4, 5, 6, 7, 8, 9).
         """
-        spiral_scan()
-        while 
 
 # Class that bundles together coordinate pairs.
 class Coordinates(object):
