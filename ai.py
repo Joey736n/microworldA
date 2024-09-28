@@ -9,8 +9,6 @@
 #     of your approach.
 
 import random
-from collections import deque as queue
-
 class AI:
     def __init__(self):
         """
@@ -18,37 +16,59 @@ class AI:
         to initialize any data or data structures you need.
         """
         self.turn = 0
-        self.map = [[]]
-
-    def BFS(start, goal):
-        """
-        basic BFS alg to find next frontier node
-        we basically need to iterate through the
-        entire frontier. 
-        """
-        q = queue()
-        reached = self.map.copy()
-        #add 
-        if tile.
-
-
-        return 
-    def spiral_scan():
-        """
-        scan each neighbor to see what the node is and add to the table
-        if its the goal return it. 
-        else move on. 
-
-        After a scan we pick the next node to move to with a shortest path func
-        
-        """
-        for i in range(self.x-1, self.x+2):
-            for j in range(self.y-1, self.y+2):
-        
-        
-
         self.ai_map = Map()
         self.test_path = ["E", "E", "S", "S"][::-1]
+
+
+    def a_star(self, start, goal):
+        """
+        a_star for pathfinding to next frontier node.
+        To prevent situations where we end up in a corner
+
+        We will use manhattan distance as our heuristic
+        """
+        def calc_dir(coordinates):
+            """
+            This computes the direction of a coordinate
+            vector relative to current position. 
+            For use in A* to save the path.
+            """
+            x = coordinates[0]
+            y = coordinates[1]
+            dir = {
+                    (1, 0): "E",
+                    (-1, 0): "W",
+                    (0, 1): "N",
+                    (0, -1): "S",
+                    (0, 0): "U"
+            }
+            #Compute the sign, then feed those into the dict
+            return dir.get((x > 0) - (x < 0), (y > 0) - (y < 0))
+
+        def manhattan_dist(a, b):
+            return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+        path = []
+        known = set()
+
+        current_score = {start: 0}
+        estimate_score = {start: manhattan_dist(start, goal)}
+
+        path.append()
+        while len(known) != 0:
+            pos = path.pop()
+            if current == goal:
+                return path
+            #for
+
+
+
+    def set_current_visited(self):
+        """
+        sets the current tile to visited
+        Solely just to cut down on spaghetti
+        """
+        self.ai_map.set_current_visited()
 
     def update(self, percepts):
         """
@@ -76,7 +96,35 @@ class AI:
         """
         self.ai_map.scan(percepts)
         self.ai_map.print_map()
-        d = self.test_path.pop()
+
+        #If it finds the goal immediately use the current tile.
+        if percepts["X"][0] == 'r':
+            return 'U'
+        
+        #Search frontier for closest node
+        self.set_current_visited()
+
+        #current location
+        loc = self.ai_map.robot_location.pair()
+
+        #expand frontier
+        for tile_coordinates in self.ai_map.get_neighbors(loc):
+            tile_x = tile_coordinates[0]
+            tile_y = tile_coordinates[1]
+            tile = self.ai_map.tile_map[tile_x][tile_y]
+            if isinstance(tile, Grass_Tile) and tile.visited == False:
+                self.ai_map.frontier_tiles.append(tile_coordinates)
+
+
+        init_tile = self.ai_map.frontier_tiles[0]
+        path = self.astar(loc, init_tile)
+        for target in self.ai_map.frontier_tiles:
+            newpath = self.astar(loc, target)
+            if len(newpath) < len(path):
+                path = newpath
+
+
+
         if d == "N":
             self.ai_map.robot_location.y -= 1
         elif d == "E":
@@ -92,6 +140,8 @@ class Coordinates(object):
     def __init__(self, x: int, y: int):
          self.x: int = x # Horizontal coordinate
          self.y: int = y # Vertical coordinate
+    def pair(self):
+        return (self.x, self.y)
 
 # Abstract class that is a parent to all tiles.
 # Defines behavior for how they are displayed on the map.
@@ -144,6 +194,21 @@ class Map(object):
         self.tile_map = [[Grass_Tile()]]
         self.robot_location: Coordinates = Coordinates(0, 0)
         self.frontier_tiles = []
+
+    #This might break, this object system does not make things easy
+    def set_current_visited(self):
+        self.tile_map[self.robot_location.x][self.robot_location.y].visited = True
+
+    def get_neighbors(self, coordinates):
+        x, y = coordinates
+        neighbors = []
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < self.map_width and 0 <= ny < self.map_height:
+                neighbor_tile = self.tile_map[ny][nx]
+                if isinstance(neighbor_tile, Grass_Tile) and not neighbor_tile.visited:
+                    neighbors.append((nx, ny))
+        return neighbors
 
     def expand_x(self, distance: int):
         for index, row in enumerate(self.tile_map):
